@@ -51,6 +51,13 @@
                 "SwitchCase": 1
             }
         ],
+		"comma-spacing": [
+			"warn", 
+			{ 
+				"before": false, 
+				"after": true 
+			}
+		],
 		"linebreak-style": [
 			"error",
 			"unix"
