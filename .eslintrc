@@ -55,6 +55,13 @@
 			"error",
 			"unix"
 		],
+		"comma-spacing": [
+			"error", 
+			{ 
+				"before": false, 
+				"after": true 
+			}
+		],
         "comma-dangle": [
             "warn",
             {
