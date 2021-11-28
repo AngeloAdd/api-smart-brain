@@ -1,6 +1,6 @@
 module.exports = (evnVar, fallback = '') => {
     if(!evnVar && !fallback){
-        throw new Error('You have to specify an env variable or its fallback value.')
+        throw new Error('You must specify an env variable or its fallback value.')
     }
 
     return evnVar ?
