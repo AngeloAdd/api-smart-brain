@@ -21,7 +21,7 @@ app.post('/signin', (req, res) => {
     const { email, password } = req.body
 
     return db('login')
-        .select('email','password')
+        .select('email', 'password')
         .where({email})
         .then(user => {
             if(bcrypt.compareSync(password, user[0].password)){
