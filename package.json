@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "lint": "npx eslint ./app.js ./config/*.js",
-    "lint:fix": "npx eslint ./app.js ./config/*.js --fix"
+    "lint:fix": "npm run lint -- --fix"
   },
   "author": "",
   "license": "ISC",
