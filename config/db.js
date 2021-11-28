@@ -1,26 +1,12 @@
-const dbConfig = {
-    local:{
-        client: 'postgres',
-        connection: {
-            host : 'localhost',
-            port : 5432,
-            user : 'Angelo',
-            password : '',
-            database : 'smart-brain',
-        },
-    },
-    prod:{
-        client: 'postgres',
-        connection: {
-            host : 'localhost',
-            port : 5432,
-            user : '',
-            password : '',
-            database : 'smart-brain',
-        },
-    },
-}
+const env = require('../utilities/env')
 
-module.exports = function(mode){
-    return dbConfig[mode || process.argv[2] || 'local'] || dbConfig.local
+module.exports = {
+    client: env('DATABASE_CLIENT', 'postgres'),
+    connection: {
+        host : env('DATABASE_HOST','localhost'),
+        port : env('DATABASE_PORT',5432),
+        user : env('DATABASE_USER','Angelo'),
+        password : env('DATABASE_PASSWORD',''),
+        database : env('DATABASE_NAME','smart-brain'),
+    },
 }
