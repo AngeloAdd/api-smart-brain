@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt-nodejs')
 const knex = require('knex')
 const app = express()
 const port = '3000'
-const defaultUserInfo = ['username','email', 'rank', 'created_at', 'updated_at']
+const defaultUserInfo = ['id','username','email', 'rank', 'created_at', 'updated_at']
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
@@ -104,7 +104,7 @@ app.put('/image', (req, res) => {
     .where({id})
     .increment('rank', 1)
     .returning('rank')
-    .then(rank => res.json(rank[0]))
+    .then(rank => res.json({rank:rank[0]}))
     .catch(e => res.status(400).json('Unable to get the rank'))
 })
 
