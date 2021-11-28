@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "lint": "npx eslint ./app.js ./config/*.js",
+    "lint": "npx eslint ./server.js ./config/*.js ./utilities/*.js",
     "lint:fix": "npm run lint -- --fix"
   },
   "author": "",
