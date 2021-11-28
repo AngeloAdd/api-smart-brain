@@ -1,31 +1,27 @@
-require('dotenv').config({path: './.env'})
-const config = require('./config/config')
-
 const express = require('express')
-const app = express()
 const cors = require('cors')
+const dbConfig = require('./config/db')
 const bcrypt = require('bcrypt-nodejs')
 const knex = require('knex')
-const db = knex(config('db'))
+const app = express()
+const port = '3000'
+const defaultUserInfo = ['id', 'username', 'email', 'rank', 'created_at', 'updated_at']
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 app.use(cors())
 
-const defaultUserInfo = ['id', 'username', 'email', 'rank', 'created_at', 'updated_at']
+const db = knex(dbConfig('local'))
 
 app.get('/', (req, res) => {
-    return db('users')
-        .select(defaultUserInfo)
-        .then( users => res.json(users))
-        .catch(res.status(404).status('No user found'))
+    res.json('ok')
 })
 
 app.post('/signin', (req, res) => {
     const { email, password } = req.body
 
     return db('login')
-        .select('email', 'password')
+        .select('email','password')
         .where({email})
         .then(user => {
             if(bcrypt.compareSync(password, user[0].password)){
@@ -47,28 +43,28 @@ app.post('/register', (req, res) => {
     const hash = bcrypt.hashSync(password)
 
     return db.transaction(trx => {
-        return Promise.all(
-            [
-                trx('users').insert({
-                    username,
-                    email: email,
-                    rank: 0,
-                    created_at: now,
-                    updated_at: now,
-                })
-                .returning(defaultUserInfo),
-                trx('login').insert({
-                    email,
-                    password: hash,
-                }),
-            ],
-        )
-        .then(user => res.json(user[0]))
-        .then(trx.commit)
-        .catch(trx.rollback)
+        return trx.insert({
+            email,
+            password: hash,
+        })
+            .into('login')
+            .returning('email')
+            .then(loginEmail => {
+                return trx('users')
+                    .returning(defaultUserInfo)
+                    .insert({
+                        username,
+                        email: loginEmail[0],
+                        rank: 0,
+                        created_at: now,
+                        updated_at: now,
+                    })
+                    .then(user => res.json(user[0]))
+                    .catch(res.status(400).json('Impossible to register!'))
+            })
     })
-    // eslint-disable-next-line no-unused-vars
-    .catch(e => res.status(400).json('Unable to register. A user with these credentials already exist.'))
+        .then(trx => trx.commit)
+        .catch(trx => trx.rollback)
 })
 
 app.get('/profile/:id', (req, res) => {
@@ -98,4 +94,6 @@ app.put('/image', (req, res) => {
         .catch(res.status(400).json('Unable to get the rank'))
 })
 
-app.listen(config('app').port)
+app.listen(port, () => {
+    console.log('up and running')
+})

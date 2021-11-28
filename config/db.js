@@ -1,12 +1,26 @@
-const loadEnv = require('../utilities/loadEnv')
-
-module.exports = {
-    client: loadEnv('DATABASE_CLIENT',  'postgres'),
-    connection: {
-        host : loadEnv('DATABASE_HOST', 'localhost'),
-        port : loadEnv('DATABASE_PORT', 5432),
-        user : loadEnv('DATABAS_USER', 'root'),
-        password : loadEnv('DATABASE_PASSWORD', 'root'),
-        database : loadEnv('DATABASE_NAME', 'rootdb'),
+const dbConfig = {
+    local:{
+        client: 'postgres',
+        connection: {
+            host : 'localhost',
+            port : 5432,
+            user : 'Angelo',
+            password : '',
+            database : 'smart-brain',
+        },
     },
+    prod:{
+        client: 'postgres',
+        connection: {
+            host : 'localhost',
+            port : 5432,
+            user : '',
+            password : '',
+            database : 'smart-brain',
+        },
+    },
+}
+
+module.exports = function(mode){
+    return dbConfig[mode || process.argv[2] || 'local'] || dbConfig.local
 }
