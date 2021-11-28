@@ -1,20 +1,24 @@
+require('dotenv').config({path: './.env'})
+const config = require('./config/config')
+
 const express = require('express')
 const cors = require('cors')
-const dbConfig = require('./config/db')
+const app = express()
 const bcrypt = require('bcrypt-nodejs')
 const knex = require('knex')
-const app = express()
-const port = '3000'
+
 const defaultUserInfo = ['id', 'username', 'email', 'rank', 'created_at', 'updated_at']
 
+// Middlewares
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 app.use(cors())
 
-const db = knex(dbConfig('local'))
+const db = knex(config('db'))
 
 app.get('/', (req, res) => {
-    res.json('ok')
+    return db('users').select(defaultUserInfo)
+    .then(users => res.json(users))
 })
 
 app.post('/signin', (req, res) => {
@@ -43,28 +47,26 @@ app.post('/register', (req, res) => {
     const hash = bcrypt.hashSync(password)
 
     return db.transaction(trx => {
-        return trx.insert({
-            email,
-            password: hash,
-        })
-            .into('login')
-            .returning('email')
-            .then(loginEmail => {
-                return trx('users')
-                    .returning(defaultUserInfo)
-                    .insert({
-                        username,
-                        email: loginEmail[0],
-                        rank: 0,
-                        created_at: now,
-                        updated_at: now,
-                    })
-                    .then(user => res.json(user[0]))
-                    .catch(res.status(400).json('Impossible to register!'))
+        return Promise.all([
+            trx('users').insert({
+                username,
+                email,
+                rank: 0,
+                created_at: now,
+                updated_at: now,
             })
+            .returning(defaultUserInfo),
+            trx('login').insert({
+                email,
+                password: hash,
+            }),
+        ])
+        .then(user => res.json(user[0]))
+        .then(trx.commit)
+        .catch(trx.rollback)
     })
-        .then(trx => trx.commit)
-        .catch(trx => trx.rollback)
+    // eslint-disable-next-line no-unused-vars
+    .catch(e => res.status(400).json('Registration failed. A user with this email already exists.'))
 })
 
 app.get('/profile/:id', (req, res) => {
@@ -78,22 +80,22 @@ app.get('/profile/:id', (req, res) => {
                 return res.json(user[0])
             }
 
-            return res.status(404).json('Not Found')
+            return res.status(404).json('User not found!')
         })
-        .catch(res.status(400).json('Error getting user info. Try again later!'))
+        // eslint-disable-next-line no-unused-vars
+        .catch(e => res.status(400).json('Error getting user info. Try again later!'))
 })
 
 app.put('/image', (req, res) => {
     const id = parseInt(req.body.id)
     
-    db('users')
+    return db('users')
         .where({id})
         .increment('rank', 1)
         .returning('rank')
         .then(rank => res.json({rank:rank[0]}))
-        .catch(res.status(400).json('Unable to get the rank'))
+        // eslint-disable-next-line no-unused-vars
+        .catch(e => res.status(404).json('Unable to get the rank. User not found.'))
 })
 
-app.listen(port, () => {
-    console.log('up and running')
-})
+app.listen(config('app').port)
