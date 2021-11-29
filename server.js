@@ -19,6 +19,7 @@ const db = knex(config('db'))
 app.get('/', (req, res) => {
     return db('users').select(defaultUserInfo)
     .then(users => res.json(users))
+    .catch(e => console.log(e))
 })
 
 app.post('/signin', (req, res) => {
@@ -35,10 +36,12 @@ app.post('/signin', (req, res) => {
                     email: user[0].email,
                 })
                 .then(data => res.json(data[0]))
-                .catch(res.status(400).json('Unable to get user!'))
+                // eslint-disable-next-line no-unused-vars
+                .catch(e => res.status(400).json('Unable to get user!'))
             }
         })
-        .catch(res.status(400).json('User info are wrong'))
+        // eslint-disable-next-line no-unused-vars
+        .catch(e => res.status(400).json('User info are wrong'))
 })
 
 app.post('/register', (req, res) => {
