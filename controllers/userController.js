@@ -68,7 +68,7 @@ const create = (db, bcrypt, defaultUserInfo) => (req, res) => {
         .catch(trx.rollback)
     })
     // eslint-disable-next-line no-unused-vars
-    .catch(e => res.status(400).json('Registration failed. A user with this email already exists. ' + e))
+    .catch(e => res.status(400).json('Registration failed. A user with this email already exists.'))
 }
 
 const show = (db, defaultUserInfo) => (req, res) => {
