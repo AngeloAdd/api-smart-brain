@@ -17,7 +17,9 @@ app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 app.use(cors())
 
-const db = knex(config('db'))
+const appEnv = config('app').env
+
+const db = knex(config('db')(appEnv))
 
 app.get('/', (req, res) => {
     return db('users').select(defaultUserInfo)
