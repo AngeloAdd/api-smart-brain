@@ -4,7 +4,8 @@
   "description": "Api for smart-brain project",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
+    "start:dev": "nodemon server.js",
     "lint": "npx eslint ./server.js ./config/*.js ./utilities/*.js",
     "lint:fix": "npm run lint -- --fix"
   },
