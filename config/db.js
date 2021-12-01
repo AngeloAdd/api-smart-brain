@@ -3,9 +3,11 @@ const env = require('../utilities/env')
 const db = {
     production : {
         client: env('DATABASE_CLIENT', 'postgres'),
-        connection :{
+        connection : {
             connectionString : env('DATABASE_URL', 'localhost') + '?sslmode=require',
-            ssl : env('DATABASE_SSL', true),
+            ssl : {
+                rejectUnauthorized: false,
+            },
         },
     },
     local : {
