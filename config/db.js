@@ -4,7 +4,7 @@ const db = {
     production : {
         client: env('DATABASE_CLIENT', 'postgres'),
         connection :{
-            connectionString : env('DATABASE_URL', 'localhost') + 'sslmode=require',
+            connectionString : env('DATABASE_URL', 'localhost') + '?sslmode=require',
             ssl : env('DATABASE_SSL', true),
         },
     },
