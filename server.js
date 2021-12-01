@@ -22,7 +22,8 @@ const db = knex(config('db'))
 app.get('/', (req, res) => {
     return db('users').select(defaultUserInfo)
     .then(users => res.json(users))
-    .catch(e => console.log(e))
+    // eslint-disable-next-line no-unused-vars
+    .catch(e => res.send('No user yet but it\'s working'))
 })
 
 app.post('/user/login', userController.login(db, bcrypt, defaultUserInfo))
