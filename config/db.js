@@ -5,7 +5,7 @@ const db = {
         client: env('DATABASE_CLIENT', 'postgres'),
         connection :{
             host : env('DATABASE_URL', 'localhost'),
-            ssh : env('DATABASE_SSH', true),
+            ssl : env('DATABASE_SSL', true),
         },
     },
     local : {
